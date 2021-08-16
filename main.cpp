@@ -28,7 +28,7 @@ int main(void) {
 	ofs << "日本語は認識できる？？" << endl;
 	ofs << "ファイルストリーム" << endl;
 
-	cout << sjis_to_utf8(utf8_to_sjis("ほげほげ")) << endl;
+	cout << utf8_to_term_enc(sjis_to_utf8(utf8_to_sjis("ほげほげ"))) << endl;
 
 	const std::array<std::string, 2> filenames{"file_utf8.txt", "file_sjis.txt"};
 	for (auto& filename : filenames) {
