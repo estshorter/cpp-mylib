@@ -7,7 +7,6 @@ find_package(ICU COMPONENTS uc i18n REQUIRED)
 
 target_link_libraries(test ICU::uc ICU::i18n)
 
-
 target_compile_options(test PRIVATE
     $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
     $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
