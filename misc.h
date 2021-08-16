@@ -6,13 +6,11 @@
 #include <locale>
 #include <string>
 
-#ifdef UTF8_TO_TERM_ENC
-#error "UTF8_TO_TERM_ENC is already defined"
-#endif
-
 #ifdef _MSC_VER
 #define NOMINMAX
+#pragma warning(disable : 5105)
 #include <Windows.h>
+#pragma warning(default : 4700)
 #undef NOMINMAX
 #else
 #if not __has_include(<unicode/unistr.h>)
