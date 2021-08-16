@@ -20,6 +20,7 @@
 #include <unicode/ucsdet.h>
 #include <unicode/unistr.h>
 
+#include <optional>
 #include <utility>
 #include <vector>
 #endif
@@ -108,31 +109,43 @@ struct CharDetResult {
 	int32_t confidence;
 };
 
-CharDetResult chardet(std::string src) {
+std::optional<CharDetResult> chardet(std::string src) {
 	UErrorCode status = U_ZERO_ERROR;
 	UCharsetDetector* csd = ucsdet_open(&status);
+	if (U_FAILURE(status)) return std::nullopt;
 	ucsdet_setText(csd, src.c_str(), src.size(), &status);
+	if (U_FAILURE(status)) return std::nullopt;
 	const UCharsetMatch* ucm = ucsdet_detect(csd, &status);
+	if (U_FAILURE(status)) return std::nullopt;
 	std::string name(ucsdet_getName(ucm, &status));
+	if (U_FAILURE(status)) return std::nullopt;
 	auto confidence = ucsdet_getConfidence(ucm, &status);
-	return {name, confidence};
+	if (U_FAILURE(status)) return std::nullopt;
+	return CharDetResult{name, confidence};
 }
 
-std::vector<CharDetResult> chardet_all(std::string src, int32_t threshold = 50) {
+std::optional<std::vector<CharDetResult> > chardet_all(std::string src, int32_t threshold = 50) {
 	UErrorCode status = U_ZERO_ERROR;
 	UCharsetDetector* csd = ucsdet_open(&status);
+	if (U_FAILURE(status)) return std::nullopt;
 	ucsdet_setText(csd, src.c_str(), src.size(), &status);
+	if (U_FAILURE(status)) return std::nullopt;
 
 	std::vector<CharDetResult> results;
 	int32_t matchesFound = 0;
 	const UCharsetMatch** ucm = ucsdet_detectAll(csd, &matchesFound, &status);
+	if (U_FAILURE(status)) return std::nullopt;
+
 	for (int i = 0; i < matchesFound; i++) {
 		const UCharsetMatch* matched = ucm[i];
 		auto confidence = ucsdet_getConfidence(matched, &status);
+		if (U_FAILURE(status)) return std::nullopt;
+
 		if (confidence < threshold) {
 			break;
 		}
 		std::string name(ucsdet_getName(matched, &status));
+		if (U_FAILURE(status)) return std::nullopt;
 		results.push_back({name, confidence});
 	}
 	return results;
@@ -189,5 +202,27 @@ inline bool getline_rtrim(std::ifstream& ifs, std::string& line) {
 	bool ret = bool(std::getline(ifs, line));
 	if (ret) rtrim(line);
 	return ret;
+}
+
+constexpr auto ws = " \t\n\r\f\v";
+
+inline std::string_view rtrim(std::string_view s, const char* t = ws) {
+	auto pos = s.find_last_not_of(t);
+	if (pos == std::string::npos) {
+		s.remove_suffix(s.size());
+	} else {
+		s.remove_suffix(s.size() - pos - 1);
+	}
+	return s;
+}
+
+inline std::string_view ltrim(std::string_view s, const char* t = ws) {
+	auto pos = std::min(s.find_first_not_of(t), s.size());
+	s.remove_prefix(pos);
+	return s;
+}
+
+inline std::string_view trim(std::string_view s, const char* t = ws) {
+	return ltrim(rtrim(s, t), t);
 }
 }  // namespace misc

@@ -14,9 +14,14 @@ int main(void) {
 
 #ifdef __linux__
 	constexpr auto str_ex = "エンコーディングが判定できるくらい長い文章を入れる";
-	auto results = chardet(str_ex);
+	auto ret = chardet(str_ex);
 	cout << str_ex << endl;
-	cout << "Detected encoding: " << results.enc << ", " << results.confidence << endl;
+	if (ret) {
+		auto results = ret.value();
+		cout << "Detected encoding: " << results.enc << ", " << results.confidence << endl;
+	} else {
+		cout << "Failed to detect encoding" << endl;
+	}
 
 	std::ofstream ofs("utf8-sig.txt");
 	add_utf8_bom(ofs);
@@ -37,10 +42,10 @@ int main(void) {
 		for (std::string line; getline_rtrim(input_file, line);) {
 			rtrim(line);
 			ss << line;
-			auto results = chardet(ss.str());
-			if (results.confidence > 50) {
-				enc = results.enc;
-				cout << "Detected encoding: " << enc << ", " << results.confidence << endl;
+			auto ret = chardet(ss.str());
+			if (ret && ret.value().confidence > 50) {
+				enc = ret.value().enc;
+				cout << "Detected encoding: " << enc << ", " << ret.value().confidence << endl;
 				break;
 			}
 		}
