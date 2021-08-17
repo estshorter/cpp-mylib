@@ -75,8 +75,10 @@ inline std::string sjis_to_utf8(const std::string& src_sjis) {
 }
 
 inline std::string utf8_to_term_enc(std::string&& src_utf8) { return utf8_to_sjis(src_utf8); }
+inline std::string utf8_to_term_enc(const std::string& src_utf8) { return utf8_to_sjis(src_utf8); }
 #else
 inline std::string utf8_to_term_enc(std::string&& src_utf8) { return std::move(src_utf8); }
+inline std::string utf8_to_term_enc(const std::string& src_utf8) { return src_utf8; }
 
 // https://unicode-org.github.io/icu/userguide/conversion/converters.html#conversion-examples
 namespace Encoding {
