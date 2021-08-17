@@ -56,7 +56,9 @@ inline std::string to_multibyte(UINT enc_dst, const std::wstring& src) {
 	//変換先の文字列長を求めておいてから変換する
 	// length_multibyteにはヌル文字分も入る
 	int length_multibyte = WideCharToMultiByte(enc_dst, 0, src.c_str(), -1, NULL, 0, NULL, NULL);
-
+	if (length_multibyte == 0) {
+		return "";
+	}
 	std::string dst(length_multibyte, 0);
 	WideCharToMultiByte(enc_dst, 0, src.data(), -1, &dst[0], length_multibyte, NULL, NULL);
 	return dst.erase(length_multibyte - 1, 1);	//ヌル文字削除
@@ -91,6 +93,9 @@ inline std::string convert_encoding(const std::string& src, const char* enc_src,
 	// pre-flighting
 	icu::UnicodeString src_icu(src.c_str(), enc_src);
 	int length = src_icu.extract(0, src_icu.length(), NULL, enc_dst);
+	if (length == 0) {
+		return "";
+	}
 	std::string result(length, 0);
 	src_icu.extract(0, src_icu.length(), &result[0], enc_dst);
 	return result;
