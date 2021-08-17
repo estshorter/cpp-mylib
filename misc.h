@@ -43,7 +43,9 @@ inline std::wstring to_utf16(UINT enc_src, const std::string& src) {
 	//変換先の文字列長を求めておいてから変換する (pre-flighting)
 	// length_utf16にはヌル文字分も入る
 	int length_utf16 = MultiByteToWideChar(enc_src, 0, src.c_str(), -1, NULL, 0);
-
+	if (length_utf16 == 0) {
+		return L"";
+	}
 	std::wstring str_utf16(length_utf16, 0);
 	MultiByteToWideChar(enc_src, 0, src.c_str(), -1, &str_utf16[0], length_utf16);
 	return str_utf16.erase(length_utf16 - 1, 1);  //ヌル文字削除
