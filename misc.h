@@ -50,7 +50,7 @@ inline std::wstring to_utf16(UINT enc_src, const std::string& src) {
 	}
 	std::wstring str_utf16(length_utf16, 0);
 	MultiByteToWideChar(enc_src, 0, src.c_str(), -1, &str_utf16[0], length_utf16);
-	return str_utf16.erase(length_utf16 - 1, 1);  //ヌル文字削除
+	return str_utf16.erase(static_cast<size_t>(length_utf16 - 1), 1);  //ヌル文字削除
 }
 
 /// <summary>UTF16からマルチバイト文字（UTF8 or SJIS）に変換する</summary>
@@ -65,7 +65,7 @@ inline std::string to_multibyte(UINT enc_dst, const std::wstring& src) {
 	}
 	std::string dst(length_multibyte, 0);
 	WideCharToMultiByte(enc_dst, 0, src.data(), -1, &dst[0], length_multibyte, NULL, NULL);
-	return dst.erase(length_multibyte - 1, 1);	//ヌル文字削除
+	return dst.erase(static_cast<size_t>(length_multibyte) - 1, 1);	//ヌル文字削除
 }
 
 inline std::string utf8_to_sjis(const std::string& src_utf8) {
