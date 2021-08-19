@@ -8,9 +8,11 @@
 
 #ifdef _MSC_VER
 #define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
 #pragma warning(suppress : 5105)
 #include <Windows.h> 
 #undef NOMINMAX
+#undef WIN32_LEAN_AND_MEAN
 #else
 #if not __has_include(<unicode/unistr.h>)
 #error "This library depends on ICU (International Components for Unicode). Please install it."
