@@ -10,7 +10,7 @@
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #pragma warning(suppress : 5105)
-#include <Windows.h> 
+#include <Windows.h>
 #undef NOMINMAX
 #undef WIN32_LEAN_AND_MEAN
 #else
@@ -39,8 +39,8 @@ cout << UTF8_TO_TERM_ENC(line) << endl;
 // https://sayahamitt.net/utf8%E3%81%AAstring%E5%85%A5%E3%82%8C%E3%81%9F%E3%82%89shiftjis%E3%81%AAstring%E5%87%BA%E3%81%A6%E3%81%8F%E3%82%8B%E9%96%A2%E6%95%B0%E4%BD%9C%E3%81%A3%E3%81%9F/
 
 /// <summary>マルチバイト文字（UTF8 or SJIS）からUTF16に変換する</summary>
-/// <param name="enc_src">変換元の文字コードを指定する。UTF8: CP_UTF8, SJIS:
-/// CP_THREAD_ACP</param>
+/// <param name="enc_src">変換元の文字コードを指定する。UTF8: CP_UTF8,
+/// locale: CP_THREAD_ACP</param>
 inline std::wstring to_utf16(UINT enc_src, const std::string& src) {
 	//変換先の文字列長を求めておいてから変換する (pre-flighting)
 	// length_utf16にはヌル文字分も入る
@@ -54,8 +54,8 @@ inline std::wstring to_utf16(UINT enc_src, const std::string& src) {
 }
 
 /// <summary>UTF16からマルチバイト文字（UTF8 or SJIS）に変換する</summary>
-/// <param name="enc_dst">変換先の文字コードを指定する。UTF8: CP_UTF8, SJIS:
-/// CP_THREAD_ACP</param>
+/// <param name="enc_dst">変換先の文字コードを指定する。UTF8: CP_UTF8, 
+/// locale: CP_THREAD_ACP</param>
 inline std::string to_multibyte(UINT enc_dst, const std::wstring& src) {
 	//変換先の文字列長を求めておいてから変換する
 	// length_multibyteにはヌル文字分も入る
@@ -65,26 +65,26 @@ inline std::string to_multibyte(UINT enc_dst, const std::wstring& src) {
 	}
 	std::string dst(length_multibyte, 0);
 	WideCharToMultiByte(enc_dst, 0, src.data(), -1, &dst[0], length_multibyte, NULL, NULL);
-	return dst.erase(static_cast<size_t>(length_multibyte) - 1, 1);	//ヌル文字削除
+	return dst.erase(static_cast<size_t>(length_multibyte) - 1, 1);	 //ヌル文字削除
 }
 
-inline std::string utf8_to_sjis(const std::string& src_utf8) {
+inline std::string utf8_to_locale(const std::string& src_utf8) {
 	auto str_utf16 = to_utf16(CP_UTF8, src_utf8);
 	auto str_sjis = to_multibyte(CP_THREAD_ACP, str_utf16);
 	return str_sjis;
 }
 
-inline std::string sjis_to_utf8(const std::string& src_sjis) {
+inline std::string utf8_to_locale(std::string&& src_utf8) { return utf8_to_locale(src_utf8); }
+
+inline std::string locale_to_utf8(const std::string& src_sjis) {
 	auto str_utf16 = to_utf16(CP_THREAD_ACP, src_sjis);
 	auto str_utf8 = to_multibyte(CP_UTF8, str_utf16);
 	return str_utf8;
 }
 
-inline std::string utf8_to_term_enc(std::string&& src_utf8) { return utf8_to_sjis(src_utf8); }
-inline std::string utf8_to_term_enc(const std::string& src_utf8) { return utf8_to_sjis(src_utf8); }
 #else
-inline std::string utf8_to_term_enc(std::string&& src_utf8) { return std::move(src_utf8); }
-inline std::string utf8_to_term_enc(const std::string& src_utf8) { return src_utf8; }
+inline std::string utf8_to_locale(std::string&& src_utf8) { return std::move(src_utf8); }
+inline std::string utf8_to_locale(const std::string& src_utf8) { return src_utf8; }
 
 // https://unicode-org.github.io/icu/userguide/conversion/converters.html#conversion-examples
 namespace Encoding {

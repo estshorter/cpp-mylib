@@ -68,8 +68,8 @@ int main(void) {
 		}
 	}
 #elif _WIN32
-	cout << utf8_to_term_enc(sjis_to_utf8("ほげほげ")) << endl;
-	cout << utf8_to_term_enc(sjis_to_utf8("日本医療政策機構")) << endl;
+	cout << utf8_to_locale(locale_to_utf8("ほげほげ")) << endl;
+	cout << utf8_to_locale(locale_to_utf8("日本医療政策機構")) << endl;
 	std::ifstream input_file("file_utf8.txt");
 	if (!input_file.is_open()) {
 		std::cerr << "Could not open the file - '"
@@ -79,7 +79,7 @@ int main(void) {
 	}
 	std::string line;
 	while (getline_rtrim(input_file, line)) {
-		line = utf8_to_term_enc(std::move(line));
+		line = utf8_to_locale(std::move(line));
 		rtrim(line);
 		cout << line << endl;
 	}
