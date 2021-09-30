@@ -119,7 +119,7 @@ struct CharDetResult {
 	int32_t confidence;
 };
 
-std::optional<CharDetResult> chardet(const std::string& src) {
+inline std::optional<CharDetResult> chardet(const std::string& src) {
 	UErrorCode status = U_ZERO_ERROR;
 	UCharsetDetector* csd = ucsdet_open(&status);
 	if (U_FAILURE(status)) return std::nullopt;
@@ -134,7 +134,7 @@ std::optional<CharDetResult> chardet(const std::string& src) {
 	return CharDetResult{name, confidence};
 }
 
-std::optional<std::vector<CharDetResult> > chardet_all(const std::string& src,
+inline std::optional<std::vector<CharDetResult> > chardet_all(const std::string& src,
 													   int32_t threshold = 50) {
 	UErrorCode status = U_ZERO_ERROR;
 	UCharsetDetector* csd = ucsdet_open(&status);
