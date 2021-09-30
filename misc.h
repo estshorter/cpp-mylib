@@ -65,7 +65,7 @@ inline std::string to_multibyte(UINT enc_dst, const std::wstring& src) {
 	}
 	std::string dst(length_multibyte, 0);
 	WideCharToMultiByte(enc_dst, 0, src.data(), -1, &dst[0], length_multibyte, NULL, NULL);
-	return dst.erase(static_cast<size_t>(length_multibyte) - 1, 1);	 //ヌル文字削除
+	return dst.erase(static_cast<size_t>(length_multibyte - 1), 1);	 //ヌル文字削除
 }
 
 inline std::string utf8_to_locale(const std::string& src_utf8) {
