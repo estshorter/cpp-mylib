@@ -13,6 +13,7 @@ target_compile_options(test PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /source-charset:utf-8 /Zc:__cplusplus /Zc:preprocessor>
 )
 target_compile_features(test PRIVATE cxx_std_17)
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "test")
 
 set(resources ${CMAKE_CURRENT_LIST_DIR}/file_sjis.txt ${CMAKE_CURRENT_LIST_DIR}/file_utf8.txt)
 add_custom_command(TARGET test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${resources} $<TARGET_FILE_DIR:test>)
